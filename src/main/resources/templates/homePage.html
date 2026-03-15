@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Home</title>
+</head>
+<body>
+    <h1>Blog Application</h1>
+
+    <a th:href="@{/blog/posts/new}">Create New Blog</a> <hr>
+
+    <div th:each="post : ${posts}">
+        <h2 th:text="${post.title}"></h2>
+
+        <p>Author: <span th:text="${post.author}"></span></p>
+
+        <p th:text="${post.excerpt}"></p> <hr>
+    </div>
+
+    <div>
+        <a th:if="${currentPage > 0}"
+           th:href="@{/blog/home(page=${currentPage-1})}">
+            Previous
+        </a>
+
+        <span th:text="${currentPage + 1}"></span>
+
+        <a th:if="${currentPage < totalPages - 1}"
+           th:href="@{/blog/home(page=${currentPage+1})}">
+            Next
+        </a>
+    </div>
+</body>
+</html>
