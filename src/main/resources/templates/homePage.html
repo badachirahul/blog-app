@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Blog Home</title>
@@ -25,6 +25,8 @@
                 <span th:text="${tag.name}"></span><span th:if="${!stat.last}">, </span>
             </span>
         </p>
+
+        <a th:href="@{/blog/posts/update/{id}(id=${post.id})}">Update blog</a>
 
         <a th:href="@{/blog/posts/{id}(id=${post.id})}">Read more</a> <hr>
     </div>

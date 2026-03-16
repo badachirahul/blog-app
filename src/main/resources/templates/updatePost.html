@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>New/Edit Post</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#efefef;
+        }
+
+        .container{
+            width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:30px;
+        }
+
+        input[type=text]{
+            width:100%;
+            padding:8px;
+            margin-bottom:15px;
+        }
+
+        textarea{
+            width:100%;
+            height:300px;
+            padding:10px;
+        }
+
+        .error{
+            color:red;
+            font-size:14px;
+        }
+
+        .btn{
+            display:block;
+            margin:20px auto;
+            padding:10px 25px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit post</h1>
+
+        <form th:action="@{/blog/posts/update}" th:object="${post}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{author}">
+
+            Title:
+            <input type="text" th:field="*{title}" placeholder="Title" required/>
+
+            <span th:if="${#fields.hasErrors('title')}"
+                  th:errors="*{title}"
+                  class="error">
+            </span> <br><br>
+
+            Tags:
+            <input type="text"
+                   name="tagNames"
+                   placeholder="spring, java, backend..."
+                   th:value="${#strings.listJoin(post.tags.![name], ', ')}" required/> <br><br>
+
+            Content:
+            <textarea th:field="*{content}" required></textarea> <br><br>
+
+            <button class="btn" type="submit">Publish</button>
+        </form>
+    </div>
+</body>
+</html>

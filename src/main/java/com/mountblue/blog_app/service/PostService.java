@@ -24,7 +24,7 @@ public class PostService {
         this.tagRepository = tagRepository;
     }
 
-    public void addPost(Post post, String tagNames, String action) {
+    public void savePost(Post post, String tagNames, String action) {
         String[] tagArray = tagNames.split(",");
 
         Set<Tag> tags = new HashSet<>();
@@ -70,5 +70,44 @@ public class PostService {
 
     public Post getSinglePost(Long id) {
         return postRepository.findById(id).orElse(null);
+    }
+
+    public void updatePost(Post updatedPost, String tagNames) {
+        Post post = postRepository.findById(updatedPost.getId())
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        String[] tagArray = tagNames.split(",");
+        Set<Tag> tags = new HashSet<>();
+
+        for (String name : tagArray) {
+            name = name.trim();
+
+            if(name.isEmpty()) continue;
+
+            Tag existingTag = tagRepository.findByName(name);
+
+            if (existingTag == null) {
+                Tag tag = new Tag();
+                tag.setName(name);
+                tagRepository.save(tag);
+                tags.add(tag);
+            } else {
+                tags.add(existingTag);
+            }
+        }
+
+        if (updatedPost.getContent().length() > 100) {
+            post.setExcerpt(updatedPost.getContent().substring(0, 100) + "....");
+        }
+        else {
+            post.setExcerpt(updatedPost.getContent());
+        }
+
+        post.setTags(tags);
+        post.setTitle(updatedPost.getTitle());
+        post.setContent(updatedPost.getContent());
+        post.setUpdatedAt(LocalDateTime.now());
+
+        postRepository.save(post);
     }
 }

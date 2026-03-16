@@ -34,10 +34,9 @@ public class PostController {
             return "createPost";
         }
         else {
-            postService.addPost(post, tagNames, action);
+            postService.savePost(post, tagNames, action);
             return "redirect:/blog/home";
         }
-
     }
 
     @GetMapping("{id}")
@@ -45,6 +44,27 @@ public class PostController {
         Post post = postService.getSinglePost(id);
         model.addAttribute("post", post);
         return "viewBlog";
+    }
+
+    @GetMapping("/update/{id}")
+    public String updatePost(@PathVariable Long id, Model model) {
+        Post post = postService.getSinglePost(id);
+        model.addAttribute("post", post);
+        return "updatePost";
+    }
+
+    @PostMapping("/update")
+    public String saveUpdatedPost(@Valid @ModelAttribute Post post,
+                                  BindingResult result,
+                                  @RequestParam String tagNames) {
+
+        if (result.hasErrors()) {
+            return "updatePost";
+        }
+        else {
+            postService.updatePost(post, tagNames);
+            return "redirect:/blog/home";
+        }
     }
 }
 
