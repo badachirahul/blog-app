@@ -63,8 +63,12 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Page<Post> getLatestBlogs(int page) {
+    public Page<Post> getLatestPosts(int page) {
         Pageable pageable = PageRequest.of(page, 10);
         return postRepository.findByIsPublishedTrueOrderByPublishedAtDesc(pageable);
+    }
+
+    public Post getSinglePost(Long id) {
+        return postRepository.findById(id).orElse(null);
     }
 }

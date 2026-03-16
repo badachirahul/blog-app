@@ -4,14 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <style>
+        .error {
+            color:red;
+        }
+    </style>
 </head>
 <body>
     <form th:action="@{/blog/posts}" th:object="${post}" method="POST">
-        Title: <input type="text" th:field="*{title}" required> <br><br>
+        Title: <input type="text" th:field="*{title}" required>
+
+        <span th:if="${#fields.hasErrors('title')}"
+              th:errors="*{title}"
+              class="error">
+        </span> <br><br>
 
         Content: <input type="text" th:field="*{content}" required> <br><br>
 
-        Author: <input type="text" th:field="*{author}" required> <br><br>
+        Author: <input type="text" th:field="*{author}" required>
+
+        <span th:if="${#fields.hasErrors('author')}"
+              th:errors="*{author}"
+              class="error">
+        </span> <br><br>
 
         Tags: <input type="text" name="tagNames" placeholder="spring, java, backend..." required> <br><br>
 

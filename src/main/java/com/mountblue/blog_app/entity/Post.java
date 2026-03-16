@@ -1,6 +1,8 @@
 package com.mountblue.blog_app.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -13,6 +15,8 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "title cannot be empty")
+    @Size(min = 5, max = 200, message = "title must be between 5 and 200 characters")
     private String title;
 
     private String excerpt;
@@ -20,6 +24,8 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @NotBlank(message = "author cannot be empty")
+    @Size(min = 3, max = 100, message = "author name must be between 3 and 100 characters")
     private String author;
 
     private LocalDateTime publishedAt;
@@ -36,6 +42,7 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @OrderBy("name ASC")
     private Set<Tag> tags = new HashSet<>();
 
     // getters and setters

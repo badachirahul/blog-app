@@ -21,7 +21,7 @@ public class HomeController {
 
     @GetMapping("/home")
     public String showHomePage(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<Post> posts = postService.getLatestBlogs(page);
+        Page<Post> posts = postService.getLatestPosts(page);
 
         model.addAttribute("currentPage", page);
         model.addAttribute("posts", posts.getContent());

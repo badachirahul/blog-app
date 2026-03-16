@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--Non logged in user should be able to read full blog post that has title, content, author, published DateTime and tags.-->
+
+    <h2 th:text="${post.title}"></h2>
+
+    <p th:text="${post.content}"></p>
+
+    <p>Author: <span th:text="${post.author}"></span> </p>
+
+    <p>Published date:
+        <span th:text="${#temporals.format(post.publishedAt, 'dd MMM yyyy')}"></span>
+    </p>
+
+    <p>Tags:
+        <span th:each="tag, stat : ${post.tags}">
+            <span th:text="${tag.name}"></span><span th:if="${!stat.last}">, </span>
+        </span>
+    </p>
+</body>
+</html>

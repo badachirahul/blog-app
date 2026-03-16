@@ -12,9 +12,21 @@
     <div th:each="post : ${posts}">
         <h2 th:text="${post.title}"></h2>
 
+        <p th:text="${post.excerpt}"></p>
+
         <p>Author: <span th:text="${post.author}"></span></p>
 
-        <p th:text="${post.excerpt}"></p> <hr>
+        <p>Published date:
+            <span th:text="${#temporals.format(post.publishedAt, 'dd MMM yyyy')}"></span>
+        </p>
+
+        <p>Tags:
+            <span th:each="tag, stat : ${post.tags}">
+                <span th:text="${tag.name}"></span><span th:if="${!stat.last}">, </span>
+            </span>
+        </p>
+
+        <a th:href="@{/blog/posts/{id}(id=${post.id})}">Read more</a> <hr>
     </div>
 
     <div>
