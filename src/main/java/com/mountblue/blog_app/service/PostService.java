@@ -110,4 +110,8 @@ public class PostService {
 
         postRepository.save(post);
     }
+
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
+    }
 }
