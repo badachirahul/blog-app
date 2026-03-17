@@ -4,6 +4,7 @@ import com.mountblue.blog_app.entity.Comment;
 import com.mountblue.blog_app.entity.Post;
 import com.mountblue.blog_app.repository.CommentRepository;
 import com.mountblue.blog_app.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,5 +25,14 @@ public class CommentService {
             comment.setPost(post);
             commentRepository.save(comment);
         }
+    }
+
+    public Comment getComment(Long postId, Long commentId) {
+        return commentRepository.findByIdAndPostId(commentId, postId);
+    }
+
+    @Transactional
+    public void deleteComment(Long postId, Long commentId) {
+        commentRepository.deleteByIdAndPostId(commentId, postId);
     }
 }

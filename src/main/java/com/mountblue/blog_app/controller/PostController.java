@@ -65,7 +65,7 @@ public class PostController {
         }
         else {
             postService.updatePost(post, tagNames);
-            return "redirect:/blog/home";
+            return "redirect:/blog/posts/" + post.getId();
         }
     }
 

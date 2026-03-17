@@ -26,12 +26,6 @@
             </span>
         </p>
 
-        <form th:action="@{/blog/posts/delete/{id}(id=${post.id})}" method="post">
-            <button type="submit">Delete blog</button>
-        </form>
-
-        <a th:href="@{/blog/posts/update/{id}(id=${post.id})}">Update blog</a>
-
         <a th:href="@{/blog/posts/{id}(id=${post.id})}">Read more</a> <hr>
     </div>
 

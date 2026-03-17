@@ -67,16 +67,45 @@
                 <span th:text="${tag.name}"></span>
             </span>
         </p>
+
+        <form th:action="@{/blog/posts/delete/{id}(id=${post.id})}" method="post">
+            <button type="submit">Delete blog</button>
+        </form>
+
+        <a th:href="@{/blog/posts/update/{id}(id=${post.id})}">Update blog</a>
     </div>
 
     <form th:action="@{/blog/posts/{postId}/comments(postId=${post.id})}" th:object="${comment}" method="post">
-        Name: <input type="text" th:field="*{name}"> <br><br>
+        <input type="hidden" th:field="*{id}">
 
-        Email: <input type="text" th:field="*{email}"> <br><br>
+        Name: <input type="text" th:field="*{name}" required> <br><br>
+
+        Email: <input type="text" th:field="*{email}" required> <br><br>
 
         comment: <textarea th:field="*{message}"></textarea>
 
         <input type="submit" value="Submit">
     </form>
+
+    <hr>
+
+    <div th:each="comment : ${post.comments}">
+        <p>Name: <span th:text="${comment.name}"></span></p>
+        <p>Comment: <span th:text="${comment.message}"></span></p>
+
+        <form th:action="@{/blog/posts/{postId}/comments/{commentId}/delete(
+                                postId=${post.id},
+                                commentId=${comment.Id})}" method="post">
+            <button type="submit">Delete comment</button>
+        </form>
+
+        <a th:href="@{/blog/posts/{postId}/comments/{commentId}/update(
+                                postId=${post.Id},
+                                commentId=${comment.Id})}">
+            Update comment
+        </a>
+
+        <hr>
+    </div>
 </body>
 </html>
