@@ -69,7 +69,7 @@ public class PostService {
     }
 
     public Post getSinglePost(Long id) {
-        return postRepository.findById(id).orElse(null);
+        return postRepository.findByIdWithComments(id);
     }
 
     public void updatePost(Post updatedPost, String tagNames) {

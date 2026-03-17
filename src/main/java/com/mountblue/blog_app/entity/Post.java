@@ -3,9 +3,12 @@ package com.mountblue.blog_app.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,9 +33,11 @@ public class Post {
 
     private LocalDateTime publishedAt;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     private Boolean isPublished;
 
@@ -44,6 +49,9 @@ public class Post {
     )
     @OrderBy("name ASC")
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     // getters and setters
     public Long getId() {

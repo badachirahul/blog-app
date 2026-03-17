@@ -1,22 +1,24 @@
 package com.mountblue.blog_app.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Table(name = "tags")
-public class Tag {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+
+    private String email;
+
+    @Column(columnDefinition = "TEXT")
+    private String message;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -24,9 +26,9 @@ public class Tag {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToMany(mappedBy = "tags")
-    @JsonIgnore
-    private Set<Post> posts = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
     // getters and setters
     public Long getId() {
@@ -45,6 +47,22 @@ public class Tag {
         this.name = name;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -61,11 +79,11 @@ public class Tag {
         this.updatedAt = updatedAt;
     }
 
-    public Set<Post> getPosts() {
-        return posts;
+    public Post getPost() {
+        return post;
     }
 
-    public void setPosts(Set<Post> posts) {
-        this.posts = posts;
+    public void setPost(Post post) {
+        this.post = post;
     }
 }

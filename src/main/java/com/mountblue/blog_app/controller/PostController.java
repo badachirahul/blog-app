@@ -1,5 +1,6 @@
 package com.mountblue.blog_app.controller;
 
+import com.mountblue.blog_app.entity.Comment;
 import com.mountblue.blog_app.entity.Post;
 import com.mountblue.blog_app.service.PostService;
 import jakarta.validation.Valid;
@@ -43,6 +44,7 @@ public class PostController {
     public String showSinglePost(@PathVariable Long id, Model model) {
         Post post = postService.getSinglePost(id);
         model.addAttribute("post", post);
+        model.addAttribute("comment", new Comment());
         return "viewBlog";
     }
 
