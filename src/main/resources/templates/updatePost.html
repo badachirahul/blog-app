@@ -2,47 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>New/Edit Post</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        body{
-            font-family: Arial, sans-serif;
-            background:#efefef;
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .container{
-            width: 900px;
-            margin: 40px auto;
-            background: white;
-            padding: 30px;
+        :root {
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #e8e8e8;
+            --gray-400: #aaaaaa;
+            --gray-600: #666666;
+            --border: 1px solid #0a0a0a;
+            --error: #cc0000;
         }
 
-        h1{
-            text-align:center;
-            margin-bottom:30px;
+        body {
+            background-color: var(--gray-100);
+            color: var(--black);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 60px 24px;
         }
 
-        input[type=text]{
-            width:100%;
-            padding:8px;
-            margin-bottom:15px;
+        /* ── CARD ── */
+        .container {
+            background: var(--white);
+            border: var(--border);
+            width: 100%;
+            max-width: 680px;
+            padding: 48px 56px;
         }
 
-        textarea{
-            width:100%;
-            height:300px;
-            padding:10px;
+        .container h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--black);
         }
 
-        .error{
-            color:red;
-            font-size:14px;
+        /* ── FORM ── */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
 
-        .btn{
-            display:block;
-            margin:20px auto;
-            padding:10px 25px;
-            cursor:pointer;
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--black);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            border: var(--border);
+            padding: 12px 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--black);
+            background: var(--white);
+            outline: none;
+            transition: background 0.2s;
+            resize: none;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            background: var(--gray-100);
+        }
+
+        textarea {
+            min-height: 280px;
+            line-height: 1.6;
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: var(--gray-400);
+        }
+
+        /* ── ERROR ── */
+        .error {
+            font-size: 0.78rem;
+            color: var(--error);
+            font-weight: 400;
+        }
+
+        /* ── BUTTON ── */
+        .btn {
+            align-self: flex-end;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 12px 32px;
+            border: var(--border);
+            background: var(--black);
+            color: var(--white);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--gray-600);
         }
     </style>
 </head>
@@ -54,22 +141,27 @@
             <input type="hidden" th:field="*{id}">
             <input type="hidden" th:field="*{author}">
 
-            Title:
-            <input type="text" th:field="*{title}" placeholder="Title" required/>
+            <div class="field">
+                <label>Title</label>
+                <input type="text" th:field="*{title}" placeholder="Title" required/>
+                <span th:if="${#fields.hasErrors('title')}"
+                      th:errors="*{title}"
+                      class="error">
+                    </span>
+            </div>
 
-            <span th:if="${#fields.hasErrors('title')}"
-                  th:errors="*{title}"
-                  class="error">
-            </span> <br><br>
+            <div class="field">
+                <label>Tags</label>
+                <input type="text"
+                       name="tagNames"
+                       placeholder="spring, java, backend..."
+                       th:value="${#strings.listJoin(post.tags.![name], ', ')}" required/>
+            </div>
 
-            Tags:
-            <input type="text"
-                   name="tagNames"
-                   placeholder="spring, java, backend..."
-                   th:value="${#strings.listJoin(post.tags.![name], ', ')}" required/> <br><br>
-
-            Content:
-            <textarea th:field="*{content}" required></textarea> <br><br>
+            <div class="field">
+                <label>Content</label>
+                <textarea th:field="*{content}" required></textarea>
+            </div>
 
             <button class="btn" type="submit">Publish</button>
         </form>

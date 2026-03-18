@@ -3,49 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <title>View Blog</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        body{
-            font-family: Arial, sans-serif;
-            background:#efefef;
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .container{
-            width:900px;
-            margin:40px auto;
-            background:white;
-            padding:30px;
+        :root {
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #e8e8e8;
+            --gray-400: #aaaaaa;
+            --gray-600: #666666;
+            --border: 1px solid #0a0a0a;
         }
 
-        h2{
-            margin-bottom:20px;
+        body {
+            background-color: var(--gray-100);
+            color: var(--black);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+            min-height: 100vh;
+            padding: 60px 24px;
         }
 
-        .content{
-            line-height:1.6;
-            margin-bottom:20px;
-            text-align: justify;
+        /* ── POST CARD ── */
+        .container {
+            background: var(--white);
+            border: var(--border);
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto 40px;
+            padding: 48px 56px;
+        }
+
+        .container h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1.25;
+            letter-spacing: -0.5px;
+            margin-bottom: 28px;
+            color: var(--black);
+        }
+
+        .content {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 32px;
+        }
+
+        .meta {
+            font-size: 0.82rem;
+            color: var(--gray-600);
+            font-weight: 300;
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
+        }
+
+        .meta span {
+            color: var(--black);
+            font-weight: 500;
+        }
+
+        /* ── TAGS ── */
+        .tags {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+            margin-bottom: 32px;
+            font-size: 0.78rem;
+            color: var(--gray-600);
+        }
+
+        .tag {
+            border: 1px solid var(--gray-200);
+            padding: 3px 10px;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        /* ── POST ACTIONS ── */
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: var(--border);
+        }
+
+        .post-actions form {
+            margin: 0;
+        }
+
+        .btn-delete {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 9px 20px;
+            border: var(--border);
+            background: var(--white);
+            color: var(--black);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .btn-update {
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--black);
+            border-bottom: 1px solid var(--black);
+            padding-bottom: 1px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-update:hover {
+            opacity: 0.5;
+        }
+
+        /* ── COMMENT FORM ── */
+        .comment-form-wrapper {
+            background: var(--white);
+            border: var(--border);
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto 32px;
+            padding: 24px 56px;
+        }
+
+        .comment-form-wrapper h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 28px;
+            color: var(--black);
+        }
+
+        .comment-form-wrapper form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--black);
+        }
+
+        .comment-form-wrapper input[type="text"],
+        .comment-form-wrapper textarea {
+            width: 100%;
+            border: var(--border);
+            padding: 10px 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            color: var(--black);
+            background: var(--white);
+            outline: none;
+            transition: background 0.2s;
+            resize: none;
+        }
+
+        .comment-form-wrapper input[type="text"]:focus,
+        .comment-form-wrapper textarea:focus {
+            background: var(--gray-100);
+        }
+
+        .comment-form-wrapper textarea {
+            min-height: 80px;
+            max-height: 80px;
             line-height: 1.6;
         }
 
-        .meta{
-            color:#555;
-            margin-bottom:10px;
+        .comment-form-wrapper input[type="submit"] {
+            align-self: flex-end;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 11px 28px;
+            border: var(--border);
+            background: var(--black);
+            color: var(--white);
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .tags{
-            margin-top:15px;
+        .comment-form-wrapper input[type="submit"]:hover {
+            background: var(--gray-600);
         }
 
-        .tag{
-            background:#f2f2f2;
-            padding:4px 8px;
-            margin-right:5px;
-            border-radius:4px;
+        /* ── COMMENTS LIST ── */
+        .comments-list {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .comments-list h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--black);
+        }
+
+        .comment-item {
+            background: var(--white);
+            border: var(--border);
+            padding: 24px 32px;
+            margin-bottom: 12px;
+        }
+
+        .comment-item p {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-bottom: 6px;
+            color: var(--black);
+        }
+
+        .comment-item p:first-child {
+            font-weight: 500;
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+        }
+
+        .comment-item p span {
+            font-weight: 400;
+            color: #333;
+        }
+
+        .comment-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .comment-actions form {
+            margin: 0;
+        }
+
+        .btn-delete-comment {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 7px 16px;
+            border: var(--border);
+            background: var(--white);
+            color: var(--black);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-delete-comment:hover {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .btn-update-comment {
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--black);
+            border-bottom: 1px solid var(--black);
+            padding-bottom: 1px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-update-comment:hover {
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
+    <!-- POST CARD -->
     <div class="container">
         <h2 th:text="${post.title}"></h2>
 
@@ -64,48 +333,66 @@
         <p class="tags">
             Tags:
             <span th:each="tag, stat : ${post.tags}" class="tag">
-                <span th:text="${tag.name}"></span>
-            </span>
+                    <span th:text="${tag.name}"></span>
+                </span>
         </p>
 
-        <form th:action="@{/blog/posts/delete/{id}(id=${post.id})}" method="post">
-            <button type="submit">Delete blog</button>
-        </form>
+        <div class="post-actions">
+            <form th:action="@{/blog/posts/delete/{id}(id=${post.id})}" method="post">
+                <button type="submit" class="btn-delete">Delete blog</button>
+            </form>
 
-        <a th:href="@{/blog/posts/update/{id}(id=${post.id})}">Update blog</a>
+            <a class="btn-update" th:href="@{/blog/posts/update/{id}(id=${post.id})}">Update blog</a>
+        </div>
     </div>
 
-    <form th:action="@{/blog/posts/{postId}/comments(postId=${post.id})}" th:object="${comment}" method="post">
-        <input type="hidden" th:field="*{id}">
+    <!-- COMMENT FORM -->
+    <div class="comment-form-wrapper">
+        <h3>Leave a Comment</h3>
+        <form th:action="@{/blog/posts/{postId}/comments(postId=${post.id})}" th:object="${comment}" method="post">
+            <input type="hidden" th:field="*{id}">
 
-        Name: <input type="text" th:field="*{name}" required> <br><br>
+            <div class="form-field">
+                <label>Name</label>
+                <input type="text" th:field="*{name}" required>
+            </div>
 
-        Email: <input type="text" th:field="*{email}" required> <br><br>
+            <div class="form-field">
+                <label>Email</label>
+                <input type="text" th:field="*{email}" required>
+            </div>
 
-        comment: <textarea th:field="*{message}"></textarea>
+            <div class="form-field">
+                <label>Comment</label>
+                <textarea th:field="*{message}"></textarea>
+            </div>
 
-        <input type="submit" value="Submit">
-    </form>
-
-    <hr>
-
-    <div th:each="comment : ${post.comments}">
-        <p>Name: <span th:text="${comment.name}"></span></p>
-        <p>Comment: <span th:text="${comment.message}"></span></p>
-
-        <form th:action="@{/blog/posts/{postId}/comments/{commentId}/delete(
-                                postId=${post.id},
-                                commentId=${comment.Id})}" method="post">
-            <button type="submit">Delete comment</button>
+            <input type="submit" value="Submit">
         </form>
+    </div>
 
-        <a th:href="@{/blog/posts/{postId}/comments/{commentId}/update(
-                                postId=${post.Id},
-                                commentId=${comment.Id})}">
-            Update comment
-        </a>
+    <!-- COMMENTS LIST -->
+    <div class="comments-list">
+        <h3>Comments</h3>
 
-        <hr>
+        <div class="comment-item" th:each="comment : ${post.comments}">
+            <p>Name: <span th:text="${comment.name}"></span></p>
+            <p>Comment: <span th:text="${comment.message}"></span></p>
+
+            <div class="comment-actions">
+                <form th:action="@{/blog/posts/{postId}/comments/{commentId}/delete(
+                                            postId=${post.id},
+                                            commentId=${comment.Id})}" method="post">
+                    <button type="submit" class="btn-delete-comment">Delete comment</button>
+                </form>
+
+                <a class="btn-update-comment" th:href="@{/blog/posts/{postId}/comments/{commentId}/update(
+                                            postId=${post.Id},
+                                            commentId=${comment.Id})}">
+                    Update comment
+                </a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
