@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 @RequestMapping("/blog")
 public class HomeController {
@@ -20,12 +23,31 @@ public class HomeController {
     }
 
     @GetMapping("/home")
-    public String showHomePage(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<Post> posts = postService.getLatestPosts(page);
+    public String showHomePage(@RequestParam(defaultValue = "1") int start,
+                               @RequestParam(defaultValue = "10") int limit,
+                               @RequestParam(defaultValue = "desc") String order,
+                               @RequestParam(required = false) String author,
+                               @RequestParam(required = false) List<Long> tagIds,
+                               Model model) {
+
+        if (author != null && author.trim().isEmpty()) {
+            author = null;
+        }
+
+        int page = (start - 1) / limit;
+
+        Page<Post> posts = postService.getLatestPosts(page, limit, order, author, tagIds);
 
         model.addAttribute("currentPage", page);
         model.addAttribute("posts", posts.getContent());
-        model.addAttribute("totalPages", posts.getTotalPages());
+        model.addAttribute("totalPosts", posts.getTotalElements());
+        model.addAttribute("start", start);
+        model.addAttribute("limit", limit);
+        model.addAttribute("order", order);
+        model.addAttribute("selectedAuthor", author);
+        model.addAttribute("selectedTagIds", tagIds != null ? tagIds : new ArrayList<>());
+        model.addAttribute("authors", postService.getDistinctAuthors());
+        model.addAttribute("tags", postService.getAllTags());
 
         return "homePage";
     }

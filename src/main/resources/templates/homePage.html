@@ -244,6 +244,102 @@
         .pagination-spacer {
             width: 80px;
         }
+
+        /* FILTER PANEL */
+        .filter-wrapper {
+            position: relative;
+        }
+
+        .filter-btn {
+            border: var(--border);
+            padding: 8px 32px 8px 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            color: var(--black);
+            background: var(--white);
+            outline: none;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .filter-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            background: var(--white);
+            border: var(--border);
+            padding: 16px;
+            z-index: 100;
+            min-width: 240px;
+        }
+
+        .filter-panel.open {
+            display: block;
+        }
+
+        .filter-section-title {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 8px;
+        }
+
+        .filter-search {
+            width: 100%;
+            border: var(--border);
+            padding: 6px 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem;
+            outline: none;
+            margin-bottom: 8px;
+            color: var(--black);
+        }
+
+        .filter-list {
+            max-height: 120px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .filter-list label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 3px 0;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400;
+        }
+
+        .filter-divider {
+            border: none;
+            border-top: 1px solid var(--gray-200);
+            margin: 12px 0;
+        }
+
+        .filter-apply {
+            width: 100%;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 9px;
+            border: var(--border);
+            background: var(--black);
+            color: var(--white);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -253,22 +349,58 @@
             <h1>Blog Application</h1>
             <a th:href="@{/blog/posts/new}">+ Create New Blog</a>
         </div>
-        <div class="header-row-2">
-            <div class="search-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                <input type="text" placeholder="Search posts...">
+        <form th:action="@{/blog/home}" method="get">
+            <input type="hidden" name="start" value="1">
+            <input type="hidden" name="limit" th:value="${limit}">
+            <div class="header-row-2">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="text" placeholder="Search posts...">
+                </div>
+                <div class="filter-wrapper">
+                    <button type="button" class="filter-btn" onclick="toggleFilter()">Filter</button>
+                    <div class="filter-panel" id="filterPanel">
+
+                        <!-- Author -->
+                        <div class="filter-section-title">Author</div>
+                        <input class="filter-search" type="text" placeholder="Search author..."
+                               oninput="filterAuthors(this.value)">
+                        <div class="filter-list" id="authorList">
+                            <label>
+                                <input type="radio" name="author" value="" th:checked="${selectedAuthor == null}"> All
+                            </label>
+                            <label th:each="author : ${authors}">
+                                <input type="radio" name="author" th:value="${author}"
+                                       th:checked="${author == selectedAuthor}">
+                                <span th:text="${author}"></span>
+                            </label>
+                        </div>
+
+                        <hr class="filter-divider">
+
+                        <!-- Tags -->
+                        <div class="filter-section-title">Tags</div>
+                        <input class="filter-search" type="text" placeholder="Search tags..."
+                               oninput="filterTags(this.value)">
+                        <div class="filter-list" id="tagList">
+                            <label th:each="tag : ${tags}">
+                                <input type="checkbox" name="tagIds" th:value="${tag.id}"
+                                       th:checked="${selectedTagIds != null && selectedTagIds.contains(tag.id)}">
+                                <span th:text="${tag.name}"></span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="filter-apply">Apply Filter</button>
+                    </div>
+                </div>
+                <select name="order" onchange="this.form.submit()">
+                    <option value="desc" th:selected="${order == 'desc'}">Sort by: Newest first</option>
+                    <option value="asc" th:selected="${order == 'asc'}">Sort by: Oldest first</option>
+                </select>
             </div>
-            <select>
-                <option value="">Filter</option>
-            </select>
-            <select>
-                <option value="">Sort</option>
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-            </select>
-        </div>
+        </form>
     </header>
 
     <hr class="header-divider">
@@ -295,15 +427,41 @@
 
     <!-- PAGINATION -->
     <div class="pagination">
-        <a th:if="${currentPage > 0}"
-           th:href="@{/blog/home(page=${currentPage-1})}">← Previous</a>
-        <div class="pagination-spacer" th:if="${currentPage == 0}"></div>
+        <a th:if="${start > 1}"
+           th:href="@{/blog/home(start=${start - limit}, limit=${limit}, order=${order})}">← Previous</a>
+        <div class="pagination-spacer" th:if="${start == 1}"></div>
 
         <span>Page <span th:text="${currentPage + 1}"></span></span>
 
-        <a th:if="${currentPage < totalPages - 1}"
-           th:href="@{/blog/home(page=${currentPage+1})}">Next →</a>
-        <div class="pagination-spacer" th:if="${currentPage >= totalPages - 1}"></div>
+        <a th:if="${start + limit <= totalPosts}"
+           th:href="@{/blog/home(start=${start + limit}, limit=${limit}, order=${order})}">Next →</a>
+        <div class="pagination-spacer" th:if="${start + limit > totalPosts}"></div>
     </div>
+
+    <script>
+        function toggleFilter() {
+            document.getElementById('filterPanel').classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.filter-wrapper')) {
+                document.getElementById('filterPanel').classList.remove('open');
+            }
+        });
+
+        function filterAuthors(val) {
+            document.querySelectorAll('#authorList label').forEach(function(label) {
+                const text = label.textContent.toLowerCase();
+                label.style.display = text.includes(val.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        function filterTags(val) {
+            document.querySelectorAll('#tagList label').forEach(function(label) {
+                const text = label.textContent.toLowerCase();
+                label.style.display = text.includes(val.toLowerCase()) ? '' : 'none';
+            });
+        }
+    </script>
 </body>
 </html>

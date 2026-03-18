@@ -7,10 +7,12 @@ import com.mountblue.blog_app.repository.TagRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -30,7 +32,7 @@ public class PostService {
         Set<Tag> tags = new HashSet<>();
 
         for (String name : tagArray) {
-            name = name.trim();
+            name = name.trim().toLowerCase();
 
             Tag existingTag = tagRepository.findByName(name);
 
@@ -63,9 +65,21 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Page<Post> getLatestPosts(int page) {
-        Pageable pageable = PageRequest.of(page, 10);
-        return postRepository.findByIsPublishedTrueOrderByPublishedAtDesc(pageable);
+    public Page<Post> getLatestPosts(int page, int limit, String order, String author, List<Long> tagIds) {
+        Sort sort = "asc".equals(order)
+                ? Sort.by("publishedAt").ascending()
+                : Sort.by("publishedAt").descending();
+
+        Pageable pageable = PageRequest.of(page, limit, sort);
+
+        if (author == null && (tagIds == null || tagIds.isEmpty())) {
+            return postRepository.findByIsPublishedTrue(pageable);
+        }
+        return postRepository.findByFilters(author, tagIds, pageable);
+    }
+
+    public List<String> getDistinctAuthors() {
+        return postRepository.findDistinctAuthors();
     }
 
     public Post getSinglePost(Long id) {
@@ -80,7 +94,7 @@ public class PostService {
         Set<Tag> tags = new HashSet<>();
 
         for (String name : tagArray) {
-            name = name.trim();
+            name = name.trim().toLowerCase();
 
             if(name.isEmpty()) continue;
 
@@ -113,5 +127,9 @@ public class PostService {
 
     public void deletePost(Long id) {
         postRepository.deleteById(id);
+    }
+
+    public List<Tag> getAllTags() {
+        return tagRepository.findAll();
     }
 }
