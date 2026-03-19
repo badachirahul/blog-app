@@ -28,15 +28,19 @@ public class HomeController {
                                @RequestParam(defaultValue = "desc") String order,
                                @RequestParam(required = false) String author,
                                @RequestParam(required = false) List<Long> tagIds,
+                               @RequestParam(required = false) String search,
                                Model model) {
 
+        if (search != null && search.trim().isEmpty()) {
+            search = null;
+        }
         if (author != null && author.trim().isEmpty()) {
             author = null;
         }
 
         int page = (start - 1) / limit;
 
-        Page<Post> posts = postService.getLatestPosts(page, limit, order, author, tagIds);
+        Page<Post> posts = postService.getLatestPosts(page, limit, order, author, tagIds, search);
 
         model.addAttribute("currentPage", page);
         model.addAttribute("posts", posts.getContent());
@@ -48,6 +52,7 @@ public class HomeController {
         model.addAttribute("selectedTagIds", tagIds != null ? tagIds : new ArrayList<>());
         model.addAttribute("authors", postService.getDistinctAuthors());
         model.addAttribute("tags", postService.getAllTags());
+        model.addAttribute("search", search);
 
         return "homePage";
     }

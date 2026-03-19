@@ -357,7 +357,8 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                     </svg>
-                    <input type="text" placeholder="Search posts...">
+                    <input type="text" name="search" placeholder="Search posts..." th:value="${search}"
+                           onkeydown="if(event.key === 'Enter') { event.preventDefault(); submitSearchOnly(this.value); }">
                 </div>
                 <div class="filter-wrapper">
                     <button type="button" class="filter-btn" onclick="toggleFilter()">Filter</button>
@@ -461,6 +462,17 @@
                 const text = label.textContent.toLowerCase();
                 label.style.display = text.includes(val.toLowerCase()) ? '' : 'none';
             });
+        }
+
+        function submitSearchOnly(searchValue) {
+            const params = new URLSearchParams();
+            params.set('start', '1');
+            params.set('limit', document.querySelector('input[name="limit"]').value);
+            params.set('order', 'desc');
+            if (searchValue.trim() !== '') {
+                params.set('search', searchValue.trim());
+            }
+            window.location.href = '/blog/home?' + params.toString();
         }
     </script>
 </body>

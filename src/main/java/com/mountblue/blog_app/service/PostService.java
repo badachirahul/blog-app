@@ -65,17 +65,25 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Page<Post> getLatestPosts(int page, int limit, String order, String author, List<Long> tagIds) {
+    public Page<Post>   getLatestPosts(int page, int limit, String order, String author, List<Long> tagIds, String search) {
         Sort sort = "asc".equals(order)
                 ? Sort.by("publishedAt").ascending()
                 : Sort.by("publishedAt").descending();
 
         Pageable pageable = PageRequest.of(page, limit, sort);
 
-        if (author == null && (tagIds == null || tagIds.isEmpty())) {
-            return postRepository.findByIsPublishedTrue(pageable);
+        boolean hasFilter = author != null || (tagIds != null && !tagIds.isEmpty());
+
+        if (search != null && hasFilter) {
+            return postRepository.findBySearchAndFilters(search, author, tagIds, pageable);
         }
-        return postRepository.findByFilters(author, tagIds, pageable);
+        if (search != null) {
+            return postRepository.findBySearch(search, pageable);
+        }
+        if (hasFilter) {
+            return postRepository.findByFilters(author, tagIds, pageable);
+        }
+        return postRepository.findByIsPublishedTrue(pageable);
     }
 
     public List<String> getDistinctAuthors() {
