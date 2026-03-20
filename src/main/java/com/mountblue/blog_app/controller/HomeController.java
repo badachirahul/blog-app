@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,18 +31,21 @@ public class HomeController {
                                @RequestParam(required = false) String author,
                                @RequestParam(required = false) List<Long> tagIds,
                                @RequestParam(required = false) String search,
+                               @RequestParam(required = false) String fromDate,
+                               @RequestParam(required = false) String toDate,
                                Model model) {
 
-        if (search != null && search.trim().isEmpty()) {
-            search = null;
-        }
-        if (author != null && author.trim().isEmpty()) {
-            author = null;
-        }
+        if (search != null && search.trim().isEmpty()) search = null;
+        if (author != null && author.trim().isEmpty()) author = null;
+        if (fromDate != null && fromDate.trim().isEmpty()) fromDate = null;
+        if (toDate != null && toDate.trim().isEmpty()) toDate = null;
+
+        LocalDateTime from = fromDate != null ? LocalDate.parse(fromDate).atStartOfDay() : null;
+        LocalDateTime to = toDate != null ? LocalDate.parse(toDate).atTime(23, 59, 59) : null;
 
         int page = (start - 1) / limit;
 
-        Page<Post> posts = postService.getLatestPosts(page, limit, order, author, tagIds, search);
+        Page<Post> posts = postService.getLatestPosts(page, limit, order, author, tagIds, search, from, to);
 
         model.addAttribute("currentPage", page);
         model.addAttribute("posts", posts.getContent());
@@ -53,6 +58,8 @@ public class HomeController {
         model.addAttribute("authors", postService.getDistinctAuthors());
         model.addAttribute("tags", postService.getAllTags());
         model.addAttribute("search", search);
+        model.addAttribute("fromDate", fromDate);
+        model.addAttribute("toDate", toDate);
 
         return "homePage";
     }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -24,30 +25,25 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT DISTINCT p FROM Post p LEFT JOIN p.tags t " +
             "WHERE p.isPublished = true " +
-            "AND (:author IS NULL OR p.author = :author) " +
-            "AND (:tagIds IS NULL OR t.id IN :tagIds)")
-    Page<Post> findByFilters(@Param("author") String author, @Param("tagIds") List<Long> tagIds, Pageable pageable);
-
-    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN p.tags t " +
-            "WHERE p.isPublished = true " +
-            "AND (LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(p.author) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<Post> findBySearch(@Param("search") String search, Pageable pageable);
-
-    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN p.tags t " +
-            "WHERE p.isPublished = true " +
-            "AND (LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(p.author) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "AND (:author IS NULL OR p.author = :author) " +
-            "AND (:tagIds IS NULL OR t.id IN :tagIds)")
-    Page<Post> findBySearchAndFilters(@Param("search") String search,
-                                      @Param("author") String author,
-                                      @Param("tagIds") List<Long> tagIds,
-                                      Pageable pageable);
+            "AND (:searchIsNull = true OR (" +
+            "  LOWER(p.title)   LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "  LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "  LOWER(p.author)  LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "  LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "  LOWER(t.name)    LIKE LOWER(CONCAT('%', :search, '%')))) " +
+            "AND (:authorIsNull = true OR p.author = :author) " +
+            "AND (:tagIdsIsNull = true OR t.id IN :tagIds) " +
+            "AND (:fromIsNull = true OR p.publishedAt >= :from) " +
+            "AND (:toIsNull = true OR p.publishedAt <= :to)")
+    Page<Post> findPosts(@Param("search") String search,
+                         @Param("searchIsNull") boolean searchIsNull,
+                         @Param("author") String author,
+                         @Param("authorIsNull") boolean authorIsNull,
+                         @Param("tagIds") List<Long> tagIds,
+                         @Param("tagIdsIsNull") boolean tagIdsIsNull,
+                         @Param("from") LocalDateTime from,
+                         @Param("fromIsNull") boolean fromIsNull,
+                         @Param("to") LocalDateTime to,
+                         @Param("toIsNull") boolean toIsNull,
+                         Pageable pageable);
 }
