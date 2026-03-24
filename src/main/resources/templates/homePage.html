@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Blog Home</title>
@@ -397,14 +398,80 @@
         .filter-clear:hover {
             background: var(--gray-100);
         }
+
+        .logout-btn {
+            text-decoration: none;
+            background-color: var(--black);
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 10px 22px;
+            border: 1px solid var(--black);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--white);
+            color: var(--black);
+        }
+
+        .logout-form {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: baseline; /* aligns text baselines instead of center */
+            gap: 16px;
+        }
+
+        .logged-in-user {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        .divider {
+            color: var(--gray-400);
+            font-weight: 300;
+        }
     </style>
 </head>
 <body>
     <!-- HEADER -->
     <header class="site-header">
         <div class="header-row-1">
-            <h1>Blog Application</h1>
-            <a th:href="@{/blog/posts/new}">+ Create New Blog</a>
+            <div class="header-left">
+                <h1>Blog Application</h1>
+                <span class="divider" sec:authorize="isAuthenticated()">|</span>
+                <span class="logged-in-user" sec:authorize="isAuthenticated()">
+                    Hello, <span sec:authentication="principal.fullName"></span>
+                </span>
+            </div>
+
+            <div class="header-actions">
+                <a th:href="@{/blog/posts/new}" sec:authorize="isAuthenticated()">+ CREATE NEW BLOG</a>
+
+                <form th:action="@{/auth/logout}" method="post" sec:authorize="isAuthenticated()" class="logout-form">
+                    <button class="logout-btn" type="submit">Logout</button>
+                </form>
+
+                <a th:href="@{/auth/login}" sec:authorize="!isAuthenticated()">Login</a>
+            </div>
         </div>
         <form th:action="@{/blog/home}" method="get">
             <input type="hidden" name="start" value="1">
@@ -485,7 +552,7 @@
             <h2 th:text="${post.title}"></h2>
 
             <p class="card-meta">
-                <span th:text="${post.author}"></span>&nbsp;·&nbsp;
+                <span th:text="${post.user.fullName}"></span>&nbsp;·&nbsp;
                 <span th:text="${#temporals.format(post.publishedAt, 'dd MMM yyyy')}"></span>
             </p>
 

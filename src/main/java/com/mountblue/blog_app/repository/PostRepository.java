@@ -15,12 +15,10 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Page<Post> findByIsPublishedTrue(Pageable pageable);
-
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.comments WHERE p.id = :id")
     Post findByIdWithComments(Long id);
 
-    @Query("SELECT DISTINCT p.author FROM Post p WHERE p.isPublished = true")
+    @Query("SELECT DISTINCT p.user.fullName FROM Post p WHERE p.isPublished = true")
     List<String> findDistinctAuthors();
 
     @Query("SELECT DISTINCT p FROM Post p LEFT JOIN p.tags t " +
@@ -28,10 +26,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "AND (:searchIsNull = true OR (" +
             "  LOWER(p.title)   LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "  LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "  LOWER(p.author)  LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "  LOWER(p.user.fullName)  LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "  LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "  LOWER(t.name)    LIKE LOWER(CONCAT('%', :search, '%')))) " +
-            "AND (:authorIsNull = true OR p.author = :author) " +
+            "AND (:authorIsNull = true OR p.user.fullName = :author) " +
             "AND (:tagIdsIsNull = true OR t.id IN :tagIds) " +
             "AND (:fromIsNull = true OR p.publishedAt >= :from) " +
             "AND (:toIsNull = true OR p.publishedAt <= :to)")

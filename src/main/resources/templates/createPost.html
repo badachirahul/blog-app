@@ -175,11 +175,7 @@
 
             <div class="field">
                 <label>Author</label>
-                <input type="text" th:field="*{author}" required>
-                <span th:if="${#fields.hasErrors('author')}"
-                      th:errors="*{author}"
-                      class="error">
-                    </span>
+                <input type="text" th:value="${loggedInUser}" disabled>
             </div>
 
             <div class="field">

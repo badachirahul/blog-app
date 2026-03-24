@@ -27,9 +27,9 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @NotBlank(message = "author cannot be empty")
-    @Size(min = 3, max = 100, message = "author name must be between 3 and 100 characters")
-    private String author;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     private LocalDateTime publishedAt;
 
@@ -86,12 +86,12 @@ public class Post {
         this.content = content;
     }
 
-    public String getAuthor() {
-        return author;
+    public User getUser() {
+        return user;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDateTime getPublishedAt() {

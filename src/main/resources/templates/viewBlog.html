@@ -322,7 +322,7 @@
 
         <p class="meta">
             Author:
-            <span th:text="${post.author}"></span>
+            <span th:text="${post.user.fullName}"></span>
         </p>
 
         <p class="meta">
@@ -349,7 +349,11 @@
     <!-- COMMENT FORM -->
     <div class="comment-form-wrapper">
         <h3>Leave a Comment</h3>
-        <form th:action="@{/blog/posts/{postId}/comments(postId=${post.id})}" th:object="${comment}" method="post">
+        <form th:action="${comment.id != null} ?
+              @{/blog/posts/{postId}/comments/{commentId}/update(postId=${post.id}, commentId=${comment.id})} :
+              @{/blog/posts/{postId}/comments(postId=${post.id})}"
+              th:object="${comment}" method="post">
+
             <input type="hidden" th:field="*{id}">
 
             <div class="form-field">

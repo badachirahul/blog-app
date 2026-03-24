@@ -2,12 +2,18 @@ package com.mountblue.blog_app.service;
 
 import com.mountblue.blog_app.entity.Post;
 import com.mountblue.blog_app.entity.Tag;
+import com.mountblue.blog_app.entity.User;
 import com.mountblue.blog_app.repository.PostRepository;
 import com.mountblue.blog_app.repository.TagRepository;
+import com.mountblue.blog_app.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,10 +26,12 @@ public class PostService {
 
     private PostRepository postRepository;
     private TagRepository tagRepository;
+    private UserRepository userRepository;
 
-    public PostService(PostRepository postRepository, TagRepository tagRepository) {
+    public PostService(PostRepository postRepository, TagRepository tagRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.tagRepository = tagRepository;
+        this.userRepository = userRepository;
     }
 
     public void savePost(Post post, String tagNames, String action) {
@@ -62,6 +70,11 @@ public class PostService {
             post.setPublished(false);
             post.setPublishedAt(null);
         }
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        post.setUser(user);
+
         postRepository.save(post);
     }
 
@@ -93,8 +106,18 @@ public class PostService {
     }
 
     public void updatePost(Post updatedPost, String tagNames) {
-        Post post = postRepository.findById(updatedPost.getId())
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(updatedPost.getId()).orElse(null);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        boolean isOwner = post.getUser().getUsername().equals(userName);
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isOwner && !isAdmin) {
+            throw new AccessDeniedException("Not allowed!");
+        }
 
         String[] tagArray = tagNames.split(",");
         Set<Tag> tags = new HashSet<>();
@@ -132,6 +155,19 @@ public class PostService {
     }
 
     public void deletePost(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        Post post = postRepository.findById(id).orElse(null);
+
+        boolean isOwner = post.getUser().getUsername().equals(userName);
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isOwner && !isAdmin) {
+            throw new AccessDeniedException("Not allowed!");
+        }
+
         postRepository.deleteById(id);
     }
 
