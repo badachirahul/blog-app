@@ -311,9 +311,29 @@
         .btn-update-comment:hover {
             opacity: 0.5;
         }
+
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--black);
+            border-bottom: 1px solid var(--black);
+            padding-bottom: 1px;
+            margin-bottom: 24px;
+            transition: opacity 0.2s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
+    <a th:href="@{/blog/home}" class="back-btn">← Back to Home</a>
+    
     <!-- POST CARD -->
     <div class="container">
         <h2 th:text="${post.title}"></h2>
